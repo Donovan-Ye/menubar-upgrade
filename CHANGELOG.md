@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [9.4.1](https://github.com/ZhengjieYe/menubar-upgrade/compare/v9.4.0...v9.4.1) (2023-10-16)
+
 ## [9.4.0](https://github.com/maxogden/menubar/compare/v9.3.0...v9.4.0) (2023-10-13)
 
 
