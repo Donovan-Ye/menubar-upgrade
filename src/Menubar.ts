@@ -1,4 +1,4 @@
-import { BrowserWindow, Tray } from 'electron';
+import { BrowserWindow, screen, Tray } from 'electron';
 import Positioner from 'electron-positioner';
 import { EventEmitter } from 'events';
 import fs from 'fs';
@@ -296,6 +296,16 @@ export class Menubar extends EventEmitter {
 		this._browserWindow.on('blur', () => {
 			if (!this._browserWindow) {
 				return;
+			}
+			// Try to fix issue that in macos, when click the tray icon uppon another fullscreen app, such as VSCode, the blur event will be triggered
+			// It seems like the fullscreen app will trigger focus event after clicking the tray icon
+			if (process.platform === 'darwin' && this._tray) {
+				const { y: pointY } = screen.getCursorScreenPoint();
+				const { height: trayHeight } = this._tray.getBounds();
+				if (pointY < trayHeight) {
+					this._browserWindow.focus();
+					return;
+				}
 			}
 
 			// hack to close if icon clicked when open
