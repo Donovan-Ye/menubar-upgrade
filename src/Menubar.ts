@@ -107,6 +107,8 @@ export class Menubar extends EventEmitter {
 		}
 		this.emit('hide');
 		this._browserWindow.hide();
+		// hide app to return focus to previous app
+		this._app.hide();
 		this.emit('after-hide');
 		this._isVisible = false;
 		if (this._blurTimeout) {
