@@ -39,7 +39,7 @@
 		"docs": "typedoc",
 		"lint": "tsc --noEmit && eslint . --ext js,ts",
 		"test": "jest",
-		"release": "bumpp && yarn publish"
+		"release": "yarn build && bumpp && yarn publish"
 	},
 	"types": "lib/index.d.ts",
 	"dependencies": {
