@@ -46,6 +46,11 @@ export interface Options {
 	 * @see https://electronjs.org/docs/api/browser-window#winloadurlurl-options
 	 */
 	index: string | false;
+
+	/**
+	 * The shortcut to toggle the window visibility.
+	 */
+	toggleDispalyShortcut?: string;
 	/**
 	 * The options passed when loading the index URL in the menubar's
 	 * browserWindow. Everything browserWindow.loadURL supports is supported;

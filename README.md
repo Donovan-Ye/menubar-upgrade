@@ -4,6 +4,11 @@ The original project only supports up to Electron^22.0.0, but my project is buil
 
 The reason I've chosen to create a new package instead of submitting a pull request is due to my observation of an existing upgrade pull request ([#440](https://github.com/maxogden/menubar/pull/440)) created on Mar 27, which has not been merged as of now.
 
+## Extra Features/Bugfixes
+
+-   Fix the issue of lose focus when clicking on the tray icon over another full-screen application in macOS. (still need to refactor, now is a quick fix)
+-   Add toggleDispalyShortcut to use shortcut to toggle the display of the menubar window (more detail about globalShortcut can be found [here](https://www.electronjs.org/docs/latest/api/global-shortcut))
+
 ---
 
 ## Below is the readme of the original project.

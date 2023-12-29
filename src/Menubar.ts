@@ -1,4 +1,4 @@
-import { BrowserWindow, screen, Tray } from 'electron';
+import { BrowserWindow, globalShortcut, screen, Tray } from 'electron';
 import Positioner from 'electron-positioner';
 import { EventEmitter } from 'events';
 import fs from 'fs';
@@ -39,6 +39,11 @@ export class Menubar extends EventEmitter {
 				this.appReady().catch((err) => console.error('menubar: ', err));
 			});
 		}
+
+		app.on('will-quit', () => {
+			// Unregister all shortcuts.
+			globalShortcut.unregisterAll();
+		});
 	}
 
 	/**
@@ -236,6 +241,14 @@ export class Menubar extends EventEmitter {
 		// eslint-disable-next-line @typescript-eslint/no-misused-promises
 		this.tray.on('double-click', this.clicked.bind(this));
 		this.tray.setToolTip(this._options.tooltip);
+
+		if (this._options.toggleDispalyShortcut) {
+			globalShortcut.register(
+				this._options.toggleDispalyShortcut,
+				// eslint-disable-next-line @typescript-eslint/no-misused-promises
+				this.clicked.bind(this)
+			);
+		}
 
 		if (!this._options.windowPosition) {
 			// Fill in this._options.windowPosition when taskbar position is available
