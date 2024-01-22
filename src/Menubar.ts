@@ -201,6 +201,17 @@ export class Menubar extends EventEmitter {
 		return;
 	}
 
+	updateShortcut(newShortcut: string): void {
+		globalShortcut.unregisterAll();
+
+		this._options.toggleDispalyShortcut = newShortcut;
+		globalShortcut.register(
+			this._options.toggleDispalyShortcut,
+			// eslint-disable-next-line @typescript-eslint/no-misused-promises
+			this.clicked.bind(this)
+		);
+	}
+
 	private async appReady(): Promise<void> {
 		if (this.app.dock && !this._options.showDockIcon) {
 			this.app.dock.hide();
