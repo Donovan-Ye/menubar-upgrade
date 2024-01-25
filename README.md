@@ -11,7 +11,8 @@ The reason I've chosen to create a new package instead of submitting a pull requ
 ## Extra Features
 
 -   Add toggleDispalyShortcut to use shortcut to toggle the display of the menubar window (more detail about globalShortcut can be found [here](https://www.electronjs.org/docs/latest/api/global-shortcut))
--   return focus to previous app after hide the menubar window
+-   Return focus to previous app after hide the menubar window
+-   Extract centerWindowWithTray function to allow user to center the window with tray icon
 
 ---
 
