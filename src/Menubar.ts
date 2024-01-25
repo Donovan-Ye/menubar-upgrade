@@ -99,6 +99,67 @@ export class Menubar extends EventEmitter {
 	}
 
 	/**
+	 *
+	 * center the window with the tray icon
+	 *
+	 * @param trayPos The bounds to show the window in.
+	 */
+	centerWindowWithTray(trayPos?: Electron.Rectangle): void {
+		// Use guard for TypeScript, to avoid ! everywhere
+		if (!this._browserWindow) {
+			throw new Error('Window has been initialized just above. qed.');
+		}
+
+		// 'Windows' taskbar: sync windows position each time before showing
+		// https://github.com/maxogden/menubar/issues/232
+		if (['win32', 'linux'].includes(process.platform)) {
+			// Fill in this._options.windowPosition when taskbar position is available
+			this._options.windowPosition = getWindowPosition(this.tray);
+		}
+
+		if (trayPos && trayPos.x !== 0) {
+			// Cache the bounds
+			this._cachedBounds = trayPos;
+		} else if (this._cachedBounds) {
+			// Cached value will be used if showWindow is called without bounds data
+			trayPos = this._cachedBounds;
+		} else if (this.tray.getBounds) {
+			// Get the current tray bounds
+			trayPos = this.tray.getBounds();
+		}
+
+		// Default the window to the right if `trayPos` bounds are undefined or null.
+		let noBoundsPosition = undefined;
+		if (
+			(trayPos === undefined || trayPos.x === 0) &&
+			this._options.windowPosition &&
+			this._options.windowPosition.startsWith('tray')
+		) {
+			noBoundsPosition =
+				process.platform === 'win32' ? 'bottomRight' : 'topRight';
+		}
+
+		const position = this.positioner.calculate(
+			this._options.windowPosition || noBoundsPosition,
+			trayPos
+		) as { x: number; y: number };
+
+		// Not using `||` because x and y can be zero.
+		const x =
+			this._options.browserWindow.x !== undefined
+				? this._options.browserWindow.x
+				: position.x;
+		const y =
+			this._options.browserWindow.y !== undefined
+				? this._options.browserWindow.y
+				: position.y;
+
+		// `.setPosition` crashed on non-integers
+		// https://github.com/maxogden/menubar/issues/233
+		this._browserWindow.setPosition(Math.round(x), Math.round(y));
+	}
+
+	/**
 	 * Hide the menubar window.
 	 */
 	hideWindow(): void {
@@ -146,55 +207,10 @@ export class Menubar extends EventEmitter {
 			throw new Error('Window has been initialized just above. qed.');
 		}
 
-		// 'Windows' taskbar: sync windows position each time before showing
-		// https://github.com/maxogden/menubar/issues/232
-		if (['win32', 'linux'].includes(process.platform)) {
-			// Fill in this._options.windowPosition when taskbar position is available
-			this._options.windowPosition = getWindowPosition(this.tray);
-		}
-
 		this.emit('show');
 
-		if (trayPos && trayPos.x !== 0) {
-			// Cache the bounds
-			this._cachedBounds = trayPos;
-		} else if (this._cachedBounds) {
-			// Cached value will be used if showWindow is called without bounds data
-			trayPos = this._cachedBounds;
-		} else if (this.tray.getBounds) {
-			// Get the current tray bounds
-			trayPos = this.tray.getBounds();
-		}
+		this.centerWindowWithTray(trayPos);
 
-		// Default the window to the right if `trayPos` bounds are undefined or null.
-		let noBoundsPosition = undefined;
-		if (
-			(trayPos === undefined || trayPos.x === 0) &&
-			this._options.windowPosition &&
-			this._options.windowPosition.startsWith('tray')
-		) {
-			noBoundsPosition =
-				process.platform === 'win32' ? 'bottomRight' : 'topRight';
-		}
-
-		const position = this.positioner.calculate(
-			this._options.windowPosition || noBoundsPosition,
-			trayPos
-		) as { x: number; y: number };
-
-		// Not using `||` because x and y can be zero.
-		const x =
-			this._options.browserWindow.x !== undefined
-				? this._options.browserWindow.x
-				: position.x;
-		const y =
-			this._options.browserWindow.y !== undefined
-				? this._options.browserWindow.y
-				: position.y;
-
-		// `.setPosition` crashed on non-integers
-		// https://github.com/maxogden/menubar/issues/233
-		this._browserWindow.setPosition(Math.round(x), Math.round(y));
 		this._browserWindow.show();
 		this._isVisible = true;
 		this.emit('after-show');
